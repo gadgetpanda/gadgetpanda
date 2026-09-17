@@ -1,3 +1,7 @@
+<div align="center">
+
+<img src="assets/logo.jpg" alt="Gadget Panda" width="160" />
+
 # Gadget Panda
 
 **One Python host. Three toys. Infinite maker projects.**
@@ -6,35 +10,55 @@
 
 Open-source runtime for makers who want **raw sensors and real control** — not a locked wellness app.
 
-| Device | Link | What you get |
-|---|---|---|
-| **RING503PANDA** | Bluetooth LE | PPG · IMU · HR/HRV · temp · SpO₂ · sport/health · battery |
-| **SoftDog (X1)** | Bluetooth LE | Actions · move/hold · program queue · web remote |
-| **FLOW-UFO** | Wi‑Fi UDP + RTSP | Stick loop · takeoff/land · FPV remote · Wi‑Fi join helpers |
-
-Runs on **Mac · Linux · Windows · Raspberry Pi**.
+[![PyPI](https://img.shields.io/pypi/v/gadgetpanda?color=111111&label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/gadgetpanda/)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
+[![Platform](https://img.shields.io/badge/Mac%20%7C%20Linux%20%7C%20Windows%20%7C%20Pi-111111)](https://github.com/gadgetpanda/gadgetpanda)
 
 ```bash
 pip install 'gadgetpanda[ui]'
-gadgetpanda ring ui --demo    # http://127.0.0.1:8765
-gadgetpanda dog ui --demo     # http://127.0.0.1:8766
-gadgetpanda drone ui --demo   # http://127.0.0.1:8767
 ```
+
+[Docs](docs/concept.md) · [Protocol](docs/protocol.md) · [PyPI](https://pypi.org/project/gadgetpanda/) · [Issues](https://github.com/gadgetpanda/gadgetpanda/issues)
+
+</div>
+
+---
+
+## Devices
+
+| | Device | Link | You get |
+|:--:|:--|:--|:--|
+| **1** | **RING503PANDA** | Bluetooth LE | PPG · IMU · HR/HRV · temp · SpO₂ · sport/health · battery |
+| **2** | **SoftDog (X1)** | Bluetooth LE | Actions · move/hold · program queue · web remote |
+| **3** | **FLOW-UFO** | Wi‑Fi UDP + RTSP | Stick loop · takeoff/land · FPV remote · Wi‑Fi helpers |
+
+<div align="center">
+
+| Ring UI | Dog UI | Drone UI |
+|:--:|:--:|:--:|
+| `:8765` | `:8766` | `:8767` |
+
+```bash
+gadgetpanda ring ui --demo
+gadgetpanda dog ui --demo
+gadgetpanda drone ui --demo
+```
+
+</div>
 
 ---
 
 ## Why Gadget Panda
 
-- **Host-side Python** — scan, connect, stream, command from your laptop or Pi
-- **Realtime UIs** included (Tesla-inspired black / red / gold) when you install `[ui]`
-- **Fine-grained APIs** — event callbacks, CLI shells, MQTT bridge (optional)
+- **Host-side Python** — scan, connect, stream, and command from a laptop or Pi
+- **Realtime UIs** — included with `[ui]` (black / red / gold)
+- **Fine-grained APIs** — callbacks, CLI shells, optional MQTT
 - **MIT** — fork it, ship it, teach with it
 
 ---
 
-## Ring — wear it, stream it
-
-Heart rate, PPG waveform, 6-axis IMU, temperature, SpO₂, sport/health packs.
+## Quick start — Ring
 
 ```python
 import asyncio
@@ -59,20 +83,17 @@ gadgetpanda ring ppg
 gadgetpanda ring ui --mode ppg
 ```
 
-Dashboard modes: all · BLE HR · PPG+HR · vitals · motion · activity  
-Docs: [docs/concept.md](docs/concept.md) · [docs/protocol.md](docs/protocol.md)
+Modes: `all` · BLE HR · PPG+HR · vitals · motion · activity  
+Docs: [concept](docs/concept.md) · [protocol](docs/protocol.md)
 
 ---
 
-## SoftDog — play, program, remote
-
-BLE fun dog (X1 profile): sit, jump, voice FX, directional hold, program sequences.
+## SoftDog
 
 ```bash
 gadgetpanda dog scan
 gadgetpanda dog connect <addr> --shell
 gadgetpanda dog action <addr> sit_down
-gadgetpanda dog move <addr> forward
 gadgetpanda dog ui <addr>          # React remote @ :8766
 gadgetpanda dog ui --demo
 ```
@@ -86,18 +107,14 @@ async with Dog(address) as dog:
     await dog.run_program([Action.JUMP, Move.TURN_LEFT, Action.VOICE])
 ```
 
-Docs: [docs/dog/concept.md](docs/dog/concept.md) · [docs/dog/protocol.md](docs/dog/protocol.md)
+Docs: [dog concept](docs/dog/concept.md) · [dog protocol](docs/dog/protocol.md)
 
 ---
 
-## FLOW-UFO — stick, fly, see
-
-Wi‑Fi mini drone (GL stick frames): 50 ms stick loop, heartbeat, takeoff/land, RTSP preview.
+## FLOW-UFO
 
 ```bash
-# Join the craft hotspot first (Mac/Linux helpers included)
 gadgetpanda drone wifi join "FLOW-UFO-xxxx"
-gadgetpanda drone wifi status
 gadgetpanda drone scan
 gadgetpanda drone ui --wifi "FLOW-UFO-xxxx" --model flow
 gadgetpanda drone ui --demo
@@ -112,8 +129,8 @@ async with Drone("192.168.1.1", model="flow") as drone:
     await drone.command("land")
 ```
 
-FPV remote at `http://127.0.0.1:8767` (needs craft Wi‑Fi + `ffmpeg` via `[ui]`).  
-Docs: [docs/drone/concept.md](docs/drone/concept.md) · [docs/drone/protocol.md](docs/drone/protocol.md)
+FPV remote: `http://127.0.0.1:8767` (needs craft Wi‑Fi + `ffmpeg` via `[ui]`)  
+Docs: [drone concept](docs/drone/concept.md) · [drone protocol](docs/drone/protocol.md)
 
 ---
 
@@ -121,20 +138,21 @@ Docs: [docs/drone/concept.md](docs/drone/concept.md) · [docs/drone/protocol.md]
 
 ```bash
 pip install gadgetpanda           # core (BLE + drone protocol)
-pip install 'gadgetpanda[ui]'     # dashboards + FPV (FastAPI, ffmpeg)
+pip install 'gadgetpanda[ui]'     # dashboards + FPV
 pip install 'gadgetpanda[mqtt]'   # MQTT bridge
 ```
 
 From source:
 
 ```bash
-git clone <repo> && cd gadgetpanda
+git clone https://github.com/gadgetpanda/gadgetpanda.git
+cd gadgetpanda
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[ui,dev]"
 ```
 
-**Needs:** Python 3.11+ · real BLE/Wi‑Fi hardware (no radio in emulators)  
-**Docker (Linux):** host network + BlueZ/NetworkManager — see [docs/docker.md](docs/docker.md)
+**Needs:** Python 3.11+ · real BLE / Wi‑Fi hardware  
+**Docker (Linux):** host network + BlueZ — [docs/docker.md](docs/docker.md)
 
 ---
 
@@ -151,7 +169,7 @@ pip install -e ".[ui,dev]"
 
 ## Soft license (optional)
 
-Honor-system feature keys (30-day, one device). Soft by default — no key means open.  
+Honor-system feature keys. Soft by default — no key means open.  
 See [docs/license.md](docs/license.md).
 
 ```bash
@@ -162,6 +180,10 @@ gadgetpanda license status
 
 ---
 
-## License
+<div align="center">
 
-**MIT** — host Python in `src/gadgetpanda/`, examples, tests, and maker docs.
+**MIT** · Small ideas. Bigger possibilities.
+
+[github.com/gadgetpanda](https://github.com/gadgetpanda) · [pypi.org/project/gadgetpanda](https://pypi.org/project/gadgetpanda/)
+
+</div>
