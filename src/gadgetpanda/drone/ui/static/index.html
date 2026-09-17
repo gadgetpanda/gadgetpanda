@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Gadget Panda · FPV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <div class="stage">
+    <div class="video-layer">
+      <img id="video" class="video" alt="RTSP preview" draggable="false">
+      <div class="video-fallback" id="video-fallback">
+        <img class="logo" src="/assets/logo.jpg" alt="">
+        <p id="video-hint">รอสตรีม RTSP…</p>
+      </div>
+    </div>
+
+    <header class="topbar">
+      <button type="button" class="round" id="btn-back" title="กลับ">‹</button>
+      <div class="top-tools">
+        <button type="button" class="round" data-cmd="headless_on" title="Headless">◎</button>
+        <button type="button" class="round ghost" title="Zoom">⌕<small>x1</small></button>
+        <button type="button" class="round ghost" title="Path">∿</button>
+        <button type="button" class="round ghost" title="VR">▣</button>
+        <button type="button" class="round" id="btn-rev" title="Rev">Rev</button>
+        <button type="button" class="round" data-cmd="calibrate" title="Calibrate">⟳</button>
+        <button type="button" class="round" data-cmd="light_on" title="Light">◉</button>
+        <button type="button" class="round ghost" title="Menu">▦</button>
+      </div>
+      <div class="conn" id="conn"><span class="dot"></span><span id="conn-label">…</span></div>
+    </header>
+
+    <aside class="rail left">
+      <button type="button" class="round" title="Camera">⇄</button>
+      <button type="button" class="round ghost" title="Gallery">🖼</button>
+      <button type="button" class="round ghost" title="MV">MV</button>
+      <button type="button" class="round accent" data-cmd="takeoff" title="Takeoff">▲</button>
+    </aside>
+
+    <aside class="rail right">
+      <div class="speed" id="speed">—</div>
+      <button type="button" class="round lg" data-cmd="light_on" title="Photo">📷</button>
+      <button type="button" class="round lg" title="Video">📹</button>
+      <button type="button" class="round land" data-cmd="land" title="Land">✈</button>
+    </aside>
+
+    <div class="sticks">
+      <div class="stick" id="stick-left" data-role="throttle-yaw">
+        <div class="stick-ring">
+          <span class="hint n">↑</span>
+          <span class="hint s">↓</span>
+          <span class="hint w">↺</span>
+          <span class="hint e">↻</span>
+          <div class="knob" id="knob-left"></div>
+        </div>
+        <p>Throttle · Yaw</p>
+      </div>
+      <div class="stick" id="stick-right" data-role="pitch-roll">
+        <div class="stick-ring">
+          <span class="hint n">⇈</span>
+          <span class="hint s">⇊</span>
+          <span class="hint w">←</span>
+          <span class="hint e">→</span>
+          <div class="knob" id="knob-right"></div>
+        </div>
+        <p>Pitch · Roll</p>
+      </div>
+    </div>
+
+    <button type="button" class="stop" id="btn-stop">Stop</button>
+
+    <footer class="meta">
+      <span id="drone-name">—</span>
+      <span id="drone-addr"></span>
+      <span id="rtsp-url"></span>
+    </footer>
+  </div>
+  <script src="/assets/app.js"></script>
+</body>
+</html>

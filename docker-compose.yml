@@ -1,0 +1,34 @@
+# Linux host recommended. Uses host network + D-Bus so BlueZ (BLE) and
+# NetworkManager (Wi‑Fi join for drones) are the host's radios.
+#
+# macOS / Windows Docker Desktop: radio passthrough does not work — run
+# gadgetpanda on the host instead (see docs/docker.md).
+
+services:
+  panda:
+    build: .
+    image: gadgetpanda:local
+    network_mode: host
+    ipc: host
+    # Needed for HCI / rfkill / Wi‑Fi association via host stack
+    privileged: true
+    stdin_open: true
+    tty: true
+    environment:
+      PYTHONUNBUFFERED: "1"
+      # Override if you self-host the portal elsewhere
+      # GADGETPANDA_LICENSE_URL: https://lib.gadgetpanda.app
+    volumes:
+      # Keep soft-license seed bound to this machine identity
+      - ${HOME}/.gadgetpanda:/root/.gadgetpanda
+      # Talk to host BlueZ + NetworkManager
+      - /var/run/dbus:/var/run/dbus
+      - /run/dbus:/run/dbus
+    devices:
+      # USB Bluetooth / Wi‑Fi dongles (ignore if path missing on some hosts)
+      - /dev/bus/usb:/dev/bus/usb
+      - /dev/rfkill:/dev/rfkill
+    # Example overrides:
+    #   docker compose run --rm panda ring scan
+    #   docker compose run --rm panda dog scan
+    #   docker compose run --rm panda drone wifi status

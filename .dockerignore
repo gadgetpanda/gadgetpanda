@@ -1,0 +1,20 @@
+# Keep the image lean — hardware runtime only needs the Python package tree.
+.venv/
+.git/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+**/__pycache__/
+**/*.py[cod]
+**/.DS_Store
+**/node_modules/
+src/gadgetpanda/dog/ui/web/
+license-portal/
+**/.dev.vars
+**/.dev.vars.example
+dist/
+build/
+*.egg-info/
+.eggs/
+tests/
+**/.wrangler/

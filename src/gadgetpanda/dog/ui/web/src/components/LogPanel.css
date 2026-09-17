@@ -1,0 +1,43 @@
+.log-box {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  max-height: 180px;
+  overflow: auto;
+  background: #000;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.log-box .line { animation: fadein 0.2s ease both; }
+.log-box .err { color: #ff8a96; }
+.log-box .rx { color: #7dffb0; }
+.log-box .tx { color: #f0d27a; }
+.log-box .info { color: var(--muted); }
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: none; }
+}
+
+.raw {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.raw input {
+  flex: 1;
+  border: 1px solid var(--line);
+  background: #0a0a0a;
+  color: var(--ink);
+  padding: 0.58rem 0.75rem;
+  border-radius: 999px;
+}
+
+.raw input::placeholder { color: var(--muted); }
+.raw input:focus {
+  outline: none;
+  border-color: rgba(201, 162, 39, 0.55);
+}

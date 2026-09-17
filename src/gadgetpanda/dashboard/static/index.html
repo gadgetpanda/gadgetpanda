@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gadget Panda · Ring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css?v=20260917e">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <img class="logo" src="/static/logo.jpg" alt="Gadget Panda" width="88" height="88">
+        <div class="brand-copy">
+          <p class="product">RING CONTROL</p>
+          <h1>Live</h1>
+        </div>
+      </div>
+      <div class="vehicle">
+        <div class="conn" id="status-pill" data-state="idle">
+          <span class="conn-dot"></span>
+          <span id="status-label">รอเชื่อมต่อ</span>
+        </div>
+        <div class="vehicle-meta">
+          <strong id="ring-name">—</strong>
+          <span id="ring-addr"></span>
+        </div>
+        <time id="clock"></time>
+      </div>
+    </header>
+
+    <section class="panel modes" id="modes">
+      <div class="panel-head">
+        <h2>Stream · เงื่อนไขการดึงข้อมูล</h2>
+        <p>ข้อความด้านล่างแสดงตลอด · ไม่ต้องรอ WebSocket</p>
+      </div>
+
+      <aside class="rules-banner" id="rules-banner">
+        <h3>กฎร่วมทุกโหมด (อ่านก่อน)</h3>
+        <ul>
+          <li>เซ็นเซอร์แสงใช้ร่วมกันไม่ได้ — <b>PPG raw</b> กับ <b>SpO₂</b> เปิดพร้อมกันไม่ได้</li>
+          <li>โหมดที่มี PPG/IMU รอประมาณ <b>2 วินาที</b> หลังสลับโหมดให้สตรีมเริ่ม</li>
+          <li>SpO₂ ต้อง <b>สวมแน่น · นิ้วอยู่นิ่ง 15–40 วินาที</b> จนขึ้นเปอร์เซ็นต์</li>
+          <li>หลังได้ SpO₂ ระบบจะพักวัดเพื่อคืนชีพจร BLE แล้ววัดซ้ำประมาณทุก <b>90 วินาที</b></li>
+          <li>ต้องอยู่บน BLE ของแหวนค้างไว้ · กด <b>Cmd+Shift+R</b> ถ้าหน้าไม่ตรงกับเวอร์ชันล่าสุด</li>
+        </ul>
+      </aside>
+
+      <div class="chip-grid" id="mode-chips"></div>
+
+      <aside class="mode-guide is-active" id="mode-guide" aria-live="polite">
+        <div class="mode-guide-title">
+          <p class="eyebrow">โหมดที่เลือกอยู่ตอนนี้</p>
+          <strong id="mode-guide-name">ทั้งหมด · All</strong>
+          <span id="mode-hint">สตรีมหลักสำหรับ Maker — PPG/IMU + ชีพจร + กีฬา/สุขภาพ</span>
+        </div>
+        <div class="mode-guide-grid">
+          <div class="mode-col">
+            <h3>ดึงได้</h3>
+            <ul id="mode-gets">
+              <li>ชีพจร BLE (หรือประมาณจาก PPG)</li>
+              <li>HRV จาก RR</li>
+              <li>คลื่น PPG</li>
+              <li>Acc / Gyro (IMU)</li>
+              <li>อุณหภูมิ · ก้าว · สุขภาพ · แบต</li>
+            </ul>
+          </div>
+          <div class="mode-col">
+            <h3>เงื่อนไข</h3>
+            <ul id="mode-needs">
+              <li>สวมแหวนให้ LED ชิดผิว</li>
+              <li>รอ ~2 วินาทีหลังเปิดโหมดให้ raw เริ่ม</li>
+              <li>BLE ต่อค้าง (อย่าปิด Bluetooth)</li>
+            </ul>
+          </div>
+          <div class="mode-col muted-col">
+            <h3>ไม่ได้ในโหมดนี้</h3>
+            <ul id="mode-skips">
+              <li>SpO₂ — ใช้โหมดสัญญาณชีพ</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mode-flags" id="mode-flags"></div>
+      </aside>
+
+      <div class="panel-head mode-board-head">
+        <h2>เงื่อนไขทุกโหมด</h2>
+        <p>แสดงครบทั้ง 6 โหมด · คลิกการ์ดเพื่อเลือก</p>
+      </div>
+      <div class="mode-board" id="mode-board">
+        <article class="mode-card is-on" data-mode="all" role="button" tabindex="0">
+          <header>
+            <div><strong>ทั้งหมด</strong><small>All</small></div>
+            <span class="mode-card-state">กำลังใช้</span>
+          </header>
+          <p class="mode-card-hint">สตรีมหลักสำหรับ Maker — PPG/IMU + ชีพจร + กีฬา/สุขภาพ</p>
+          <div class="mode-card-cols">
+            <div><h4>ดึงได้</h4><ul><li>ชีพจร BLE (หรือประมาณจาก PPG)</li><li>HRV จาก RR</li><li>คลื่น PPG</li><li>Acc / Gyro (IMU)</li><li>อุณหภูมิ</li><li>ก้าว · ระยะ · แคลอรี่</li><li>Stress · VO₂ · หายใจ · อารมณ์ · ความทน</li><li>แบตเตอรี่</li></ul></div>
+            <div><h4>เงื่อนไข</h4><ul><li>สวมแหวนให้ LED ชิดผิว</li><li>รอ ~2 วินาทีหลังเปิดโหมดให้ raw เริ่ม</li><li>BLE ต่อค้าง (อย่าปิด Bluetooth)</li></ul></div>
+            <div class="skip"><h4>ไม่ได้</h4><ul><li>SpO₂ — ใช้โหมดสัญญาณชีพ (เซ็นเซอร์แสงใช้ร่วมกับ PPG ไม่ได้)</li></ul></div>
+          </div>
+        </article>
+        <article class="mode-card" data-mode="hr" role="button" tabindex="0">
+          <header>
+            <div><strong>ชีพจร BLE</strong><small>Heart rate</small></div>
+            <span class="mode-card-state">เลือก</span>
+          </header>
+          <p class="mode-card-hint">เฉพาะ Heart Rate Service — ไม่เปิด PPG/IMU/SpO₂</p>
+          <div class="mode-card-cols">
+            <div><h4>ดึงได้</h4><ul><li>ชีพจร BPM จาก BLE 0x2A37</li><li>HRV (SDNN) จาก RR ฝั่งโฮสต์</li><li>แบตเตอรี่</li></ul></div>
+            <div><h4>เงื่อนไข</h4><ul><li>สวมแหวน</li><li>เปิด notify Heart Rate ของแหวน</li></ul></div>
+            <div class="skip"><h4>ไม่ได้</h4><ul><li>PPG</li><li>IMU</li><li>SpO₂</li><li>ก้าว/สุขภาพโพล</li></ul></div>
+          </div>
+        </article>
+        <article class="mode-card" data-mode="ppg" role="button" tabindex="0">
+          <header>
+            <div><strong>PPG + ชีพจร</strong><small>Optical</small></div>
+            <span class="mode-card-state">เลือก</span>
+          </header>
+          <p class="mode-card-hint">คลื่นแสงดิบ + ประมาณชีพจรจาก PPG — ไม่วัด SpO₂</p>
+          <div class="mode-card-cols">
+            <div><h4>ดึงได้</h4><ul><li>คลื่น PPG realtime</li><li>Acc / Gyro</li><li>ชีพจรประมาณจาก PPG</li></ul></div>
+            <div><h4>เงื่อนไข</h4><ul><li>สวมแน่น LED ชิดผิว</li><li>รอ ~2 วินาทีให้สตรีม 0x99 เริ่ม</li><li>นิ่งพอสมควรถ้าต้องการคลื่นสวย</li></ul></div>
+            <div class="skip"><h4>ไม่ได้</h4><ul><li>SpO₂</li><li>HRV จาก BLE RR</li><li>ก้าว/สุขภาพโพล</li></ul></div>
+          </div>
+        </article>
+        <article class="mode-card" data-mode="vitals" role="button" tabindex="0">
+          <header>
+            <div><strong>สัญญาณชีพ</strong><small>Vitals</small></div>
+            <span class="mode-card-state">เลือก</span>
+          </header>
+          <p class="mode-card-hint">เน้น SpO₂ + ชีพจร BLE + อุณหภูมิ/สุขภาพ — ไม่เปิด PPG raw</p>
+          <div class="mode-card-cols">
+            <div><h4>ดึงได้</h4><ul><li>SpO₂ %</li><li>ชีพจร BLE + HRV (หลังได้ SpO₂ แล้วระบบจะคืนชีพจร)</li><li>อุณหภูมิ body / wrist / ambient</li><li>Stress · VO₂ · หายใจ · อารมณ์ · ความทน</li><li>แบตเตอรี่</li></ul></div>
+            <div><h4>เงื่อนไข</h4><ul><li>สวมแน่นมาก · นิ้วอยู่นิ่ง 15–40 วินาที</li><li>อย่าเปิดโหมด PPG พร้อมกัน (LED ใช้ร่วมกัน)</li><li>ได้ % แล้วระบบพัก SpO₂ เพื่อดึงชีพจร · วัดซ้ำ ~90 วินาที</li></ul></div>
+            <div class="skip"><h4>ไม่ได้</h4><ul><li>คลื่น PPG</li><li>Acc / Gyro</li><li>ก้าว/ระยะ</li></ul></div>
+          </div>
+        </article>
+        <article class="mode-card" data-mode="motion" role="button" tabindex="0">
+          <header>
+            <div><strong>การเคลื่อนไหว</strong><small>IMU</small></div>
+            <span class="mode-card-state">เลือก</span>
+          </header>
+          <p class="mode-card-hint">เฉพาะ Acc / Gyro สำหรับ gesture / โมชัน</p>
+          <div class="mode-card-cols">
+            <div><h4>ดึงได้</h4><ul><li>Accelerometer X/Y/Z</li><li>Gyroscope X/Y/Z</li></ul></div>
+            <div><h4>เงื่อนไข</h4><ul><li>รอ ~2 วินาทีหลังเปิดโหมด</li><li>ขยับนิ้ว/มือเพื่อเห็นกราฟ</li></ul></div>
+            <div class="skip"><h4>ไม่ได้</h4><ul><li>ชีพจร</li><li>PPG waveform</li><li>SpO₂</li><li>กีฬา/สุขภาพ</li></ul></div>
+          </div>
+        </article>
+        <article class="mode-card" data-mode="activity" role="button" tabindex="0">
+          <header>
+            <div><strong>กิจกรรม</strong><small>Activity</small></div>
+            <span class="mode-card-state">เลือก</span>
+          </header>
+          <p class="mode-card-hint">โพลค่าสะสมจากแหวน — ไม่สตรีมเซ็นเซอร์ดิบ</p>
+          <div class="mode-card-cols">
+            <div><h4>ดึงได้</h4><ul><li>ก้าว · ระยะทาง · แคลอรี่</li><li>ค่าสุขภาพโพลได้</li><li>อุณหภูมิ</li></ul></div>
+            <div><h4>เงื่อนไข</h4><ul><li>แหวนเคยซิงก์กิจกรรมมาก่อน</li><li>โพลทุก ~1–2 วินาที</li></ul></div>
+            <div class="skip"><h4>ไม่ได้</h4><ul><li>PPG</li><li>IMU</li><li>SpO₂</li><li>ชีพจร realtime</li></ul></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <main class="cockpit">
+      <section class="panel band" id="vitals" data-section="vitals">
+        <div class="panel-head">
+          <h2>Vitals</h2>
+          <p>HR/HRV ใช้โหมด All·HR·Vitals · SpO₂ เฉพาะโหมดสัญญาณชีพ (สวมแน่นนิ่ง)</p>
+        </div>
+        <div class="grid four" id="vitals-grid"></div>
+      </section>
+
+      <section class="panel band" id="temperature" data-section="temperature">
+        <div class="panel-head">
+          <h2>Temperature</h2>
+          <p>โพลจากแหวน · โหมด All / Vitals / Activity</p>
+        </div>
+        <div class="grid three" id="temp-grid"></div>
+      </section>
+
+      <section class="panel band" id="activity" data-section="activity">
+        <div class="panel-head">
+          <h2>Activity</h2>
+          <p>ก้าว·ระยะ·แคลอรี่ · โหมด All / Activity (โพล ไม่ใช่สตรีมดิบ)</p>
+        </div>
+        <div class="grid three" id="activity-grid"></div>
+      </section>
+
+      <section class="panel band" id="wellness" data-section="wellness">
+        <div class="panel-head">
+          <h2>Wellness</h2>
+          <p>ค่าสุขภาพจากแหวน · โหมด All / Vitals / Activity</p>
+        </div>
+        <div class="grid five" id="wellness-grid"></div>
+      </section>
+
+      <section class="panel band" id="motion" data-section="motion">
+        <div class="panel-head">
+          <h2>Motion</h2>
+          <p>Acc/Gyro · โหมด All / PPG / Motion · รอ ~2 วิ แล้วขยับมือ</p>
+        </div>
+        <div class="split">
+          <article class="scope">
+            <div class="scope-head">
+              <h3>Acc <span>x / y / z</span></h3>
+              <div class="legend">
+                <em class="x">X</em><em class="y">Y</em><em class="z">Z</em>
+              </div>
+            </div>
+            <canvas id="acc-chart" height="140"></canvas>
+            <div class="xyz" id="acc-readout"></div>
+          </article>
+          <article class="scope">
+            <div class="scope-head">
+              <h3>Gyro <span>x / y / z</span></h3>
+              <div class="legend">
+                <em class="x">X</em><em class="y">Y</em><em class="z">Z</em>
+              </div>
+            </div>
+            <canvas id="gyro-chart" height="140"></canvas>
+            <div class="xyz" id="gyro-readout"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel band" id="optical" data-section="optical">
+        <div class="panel-head">
+          <h2>PPG</h2>
+          <p>คลื่นแสงดิบ · โหมด All / PPG · ใช้ร่วมกับ SpO₂ ไม่ได้ · สวม LED ชิดผิว</p>
+        </div>
+        <article class="scope wide">
+          <div class="scope-head">
+            <h3>Waveform <span id="ppg-flag"></span></h3>
+            <strong id="ppg-value">—</strong>
+          </div>
+          <canvas id="ppg-chart" height="180"></canvas>
+        </article>
+      </section>
+
+      <section class="panel band" id="wearer">
+        <div class="panel-head">
+          <h2>Wearer</h2>
+          <p>Write to ring</p>
+        </div>
+        <form class="profile-form" id="user-form">
+          <label>อายุ <small>ปี</small>
+            <input id="user-age" name="age" type="number" min="1" max="120" inputmode="numeric" required>
+          </label>
+          <label>น้ำหนัก <small>kg</small>
+            <input id="user-weight" name="weight_kg" type="number" min="20" max="250" inputmode="numeric" required>
+          </label>
+          <label>ส่วนสูง <small>cm</small>
+            <input id="user-height" name="height_cm" type="number" min="80" max="250" inputmode="numeric" required>
+          </label>
+          <label>เพศ <small>เก็บค่าเดิมถ้าไม่เปลี่ยน</small>
+            <select id="user-sex" name="sex">
+              <option value="">—</option>
+              <option value="0">หญิง</option>
+              <option value="1">ชาย</option>
+            </select>
+          </label>
+          <div class="profile-actions">
+            <button type="submit" class="btn primary">บันทึกลงแหวน</button>
+            <p class="hint" id="user-status"></p>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel band" id="profile">
+        <div class="panel-head">
+          <h2>Device</h2>
+          <p>Ring profile</p>
+        </div>
+        <dl class="facts" id="facts"></dl>
+      </section>
+    </main>
+
+    <footer>
+      <p>สตรีมจาก BLE แบบ realtime · ไม่เรียก restore / DFU</p>
+    </footer>
+  </div>
+  <script src="/static/app.js?v=20260917e"></script>
+</body>
+</html>

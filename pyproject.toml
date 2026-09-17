@@ -1,0 +1,120 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gadgetpanda"
+version = "0.1.3"
+description = "Maker host for RING503PANDA ring, SoftDog, and FLOW-UFO drones — BLE/Wi‑Fi sensors, remotes, and realtime UIs."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "Gadget Panda" }]
+keywords = [
+  "ble",
+  "wearable",
+  "ring503panda",
+  "smart-ring",
+  "imu",
+  "ppg",
+  "heartrate",
+  "softdog",
+  "drone",
+  "flow-ufo",
+  "wifi",
+  "fpv",
+  "maker",
+  "mqtt",
+  "raspberry-pi",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Education",
+  "Topic :: System :: Hardware",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "bleak>=0.22",
+  "PyNaCl>=1.5",
+]
+
+[project.optional-dependencies]
+mqtt = ["paho-mqtt>=2.1"]
+ui = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "websockets>=14.0",
+  "imageio-ffmpeg>=0.5",
+]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24", "build>=1.2"]
+
+[project.scripts]
+gadgetpanda = "gadgetpanda.cli:main"
+
+[project.urls]
+Documentation = "https://github.com/gadgetpanda/gadgetpanda"
+Issues = "https://github.com/gadgetpanda/gadgetpanda/issues"
+
+# Keep the published artifact lean: built UI static only — never Vite source / node_modules / caches.
+[tool.hatch.build]
+exclude = [
+  "**/__pycache__",
+  "**/*.py[cod]",
+  "**/.DS_Store",
+  "**/.pytest_cache",
+  "**/node_modules",
+  "**/dog/ui/web",
+  "**/*.egg-info",
+  "license-portal",
+  "**/.dev.vars",
+  "**/.dev.vars.example",
+  "**/.wrangler",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gadgetpanda"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/examples",
+  "/docs",
+  "/scripts",
+  "/README.md",
+  "/LICENSE",
+  "/pyproject.toml",
+  "/Dockerfile",
+  "/docker-compose.yml",
+  "/.dockerignore",
+]
+exclude = [
+  "/src/gadgetpanda/dog/ui/web",
+  "/license-portal",
+  "**/node_modules",
+  "**/__pycache__",
+  "**/.DS_Store",
+  "**/.dev.vars",
+  "**/.wrangler",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+  "e2e: end-to-end flow against the in-process ring simulator",
+  "hardware: live BLE tests (PANDA_E2E=1)",
+]
+
+[tool.unittest]
+# discover with: PYTHONPATH=src python -m unittest discover -s tests/unit -v

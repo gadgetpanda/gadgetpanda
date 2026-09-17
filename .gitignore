@@ -1,0 +1,28 @@
+# Local / tooling
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.DS_Store
+
+# Keep parent-kit binaries / private trees out of this repo
+../_vendor_do_not_publish/
+
+# Vite frontend is built into dog/ui/static — keep source in git, out of PyPI
+src/gadgetpanda/dog/ui/web/node_modules/
+src/gadgetpanda/dog/ui/web/dist/
+
+# Optional local brand asset at repo root (runtime uses static/logo.jpg copies)
+/logo.jpg
+
+# License portal is private — not part of the public GitHub tree
+license-portal/
+
+# Private sales exports (customer PII — keep local)
+docs/sales/
