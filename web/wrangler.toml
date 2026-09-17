@@ -1,0 +1,26 @@
+name = "gadgetpanda-web"
+main = ".open-next/worker.js"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[[routes]]
+pattern = "gadgetpanda.app"
+custom_domain = true
+
+[[routes]]
+pattern = "www.gadgetpanda.app"
+custom_domain = true
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+# Same D1 as license-portal (lib.gadgetpanda.app)
+[[d1_databases]]
+binding = "DB"
+database_name = "gadgetpanda-license"
+database_id = "65a34a9a-325e-413d-9117-fd9ab70d170a"
+
+# Secrets (optional):
+#   npx wrangler secret put GEMINI_API_KEY
